@@ -7,8 +7,8 @@ from cryptography.hazmat.primitives import serialization
 
 from users_app.cql_queries import ExecuteCQL
 from users_app.kafka_producer import send_one
-from users_app.models import AuthToken, Key, RefreshToken, User
-from users_app.serializers import KeySchema, UserSchema
+from users_app.models import User
+from users_app.serializers import UserSchema
 from users_app.utils import APIException, dumps
 
 
@@ -171,26 +171,6 @@ class UserStatusView(APIView):
         except DoesNotExist:
             raise APIException(message='User does not exists')
         return web.Response(status=200)
-
-
-class UserLoginView(APIView):
-    async def post(self):
-        self.data = await self.request.json()
-        if not await self.check_request_data():
-            raise APIException(message='Missing password or username')
-        if not (
-            await self.is_user_exists() and
-            await self.check_credentials()
-        ):
-            raise APIException(message='Invalid password or username')
-        try:
-            key = await self.execute_cql['get_key_by_user_id'](
-                self.user_obj.user_id)
-        except DoesNotExist:
-            raise APIException('key doesnt exists')
-        schema = UserSchema()
-        userdata = schema.dump(self.user_obj).data
-        return web.json_response(userdata, dumps=dumps)
 
 
 class UserRegistrationView_v1(APIView):

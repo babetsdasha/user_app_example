@@ -1,0 +1,9 @@
+cassandra-driver
+aiohttp
+aiocassandra
+marshmallow
+pynacl
+passlib
+cryptography
+kafka-python
+aiokafka
